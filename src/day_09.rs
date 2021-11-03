@@ -25,27 +25,43 @@ fn get_index(index: i32, length: usize) -> usize{
 
 fn part_a(players: usize, limit: usize) -> i32 {
     let mut current: usize = 0;
-    let mut marbles = vec![0];
+    const ARRAY_SIZE: usize = 20;
+    let mut marbles = vec![0; ARRAY_SIZE];
     let mut value = 1;
     let mut scores: Vec<i32> = vec![0; players];
+    let mut array_length = 1;
 
     for player in 0..limit {
 
         if value % 23 == 0 {
-            let remove_index = get_index(current as i32 - 7, marbles.len());
-            let removed = marbles.remove(remove_index);
+            let remove_index = get_index(current as i32 - 7, array_length) % ARRAY_SIZE;
+            let removed = marbles[remove_index];
+            println!("removed: {}", removed);
+
+            for i in remove_index..(array_length) {
+                marbles[i % ARRAY_SIZE] = marbles[(i+1) % ARRAY_SIZE]
+            }
+
+            array_length -= 1;
             scores[player % players] += removed + value;
             current = remove_index;
         } else {
-            let new_index = get_index((current + 2) as i32, marbles.len());
-
+            let new_index = (get_index((current + 2) as i32, array_length)) % ARRAY_SIZE;
+    
             if new_index == 0 {
-                marbles.push(value);
-                current = marbles.len()-1;
+                marbles[array_length % ARRAY_SIZE] = value;
+                current = array_length;
             } else {
-                marbles.insert(new_index, value);
+
+                for i in (new_index..array_length).rev() {
+                    marbles[(i+1) % ARRAY_SIZE] = marbles[i % ARRAY_SIZE]
+                }
+
+                marbles[new_index] = value;
                 current = new_index;
             }
+
+            array_length += 1;
         }
 
         println!("{}:\t{:?}", (player % players) + 1, marbles);
