@@ -1,9 +1,7 @@
-const GENERATIONS: usize = 50000000000;
-const OFSSET: usize = 100;
+use std::collections::HashSet;
 
-#[derive(Clone)]
 struct Note {
-    pattern: String,
+    pattern: Vec<char>,
     next: char
 }
 
@@ -15,60 +13,82 @@ pub fn run(){
     lines.next();
 
     for i in lines {
-        if i.chars().collect::<Vec<char>>()[9] == '.' { continue; }
+        // if i.chars().collect::<Vec<char>>()[9] == '.' { continue; }
         notes.push(
             Note {
-                pattern: String::from(i[0..5].chars().collect::<String>()),
+                pattern: i[0..5].chars().collect(),
                 next: i.chars().collect::<Vec<char>>()[9]
             }
         );
     }
 
-    let mut pots: Vec<char> = vec!['.'; OFSSET * 2 + initial.len()];
+    let mut pots: HashSet<i32> = HashSet::new();
     for (i, c) in initial.chars().enumerate() {
-        pots[OFSSET + i] = c;
+        if c == '#' {
+            pots.insert(i as i32);
+        }
     }
-
-    // println!("initial state: {}\n", pots.iter().collect::<String>());
-    // for i in &notes {
-    //     println!("{} => {}", i.pattern, i.next);
-    // }
     
     println!("Day 12");
-    let a = part_a(&mut pots, &notes);
+    let a = part_a(&pots, &notes, 20);
     println!("Part A result: {}", a);
-    // let b = part_b(&input);
-    // println!("Part B result: {}", b);
+    let b = part_a(&pots, &notes, 50000000000);
+    println!("Part B result: {}", b);
 }
 
-fn part_a(pots: &Vec<char>, notes: &Vec<Note>) -> i32 {
+fn part_a(pots: &HashSet<i32>, notes: &Vec<Note>, generations: usize) -> u64 {
 
     let mut pots = pots.clone();
-    let mut pots_mod;
+    let mut pots_mod: HashSet<i32>;
     let mut result: i32 = 0;
+    let mut prev_result = result;
+    let mut prev_diff = result - prev_result;
 
-    // println!("state: {}", pots.iter().collect::<String>());
+    let mut max = 0;
+    let mut min = 0;
+    for i in &pots {
+        if *i < min { min = *i; }
+        if *i > max { max = *i; }
+    }
 
-    for g in 0..GENERATIONS {
+    for g in 0..generations {
 
-        if g % 100 == 0 { println!("{}", g); }
+        if g % 10 == 0 && g > 0 { 
+            if result - prev_result == prev_diff {
+                return (generations - g) as u64 * prev_diff as u64 + result as u64;
+            }
+            prev_diff = result - prev_result;
+        }
 
-        pots_mod = vec!['.'; pots.len()];
+        pots_mod = HashSet::new();
+        prev_result = result;
         result = 0;
         for n in notes {
-            for x in 0..pots.len()-5 {
-                let pot_pat = pots[x..x+5].iter().collect::<String>();
-                if n.pattern == pot_pat {
-                    pots_mod[x+2] = n.next;
-                    result += (x + 2) as i32 - OFSSET as i32;
+            'position: for rx in 0..max-min+6 {
+
+                let x = rx as i32 + min - 5 as i32;
+
+                for i in 0..5 {
+                    if (n.pattern[i] == '#' && !pots.contains(&(x+i as i32))) || 
+                       (n.pattern[i] == '.' &&  pots.contains(&(x+i as i32))) {
+                        continue 'position;
+                    }
+                }
+
+                let pot_nr = x as i32 + 2;
+                if n.next == '#' {
+                    pots_mod.insert(pot_nr);
+                    result += x + 2;
+                    if pot_nr < min { min = pot_nr; }
+                    if pot_nr > max { max = pot_nr; }
+                } else {
+                    pots_mod.remove(&pot_nr);
                 }
             }
         }
 
         pots = pots_mod.clone();
-
-        // println!("state: {}", pots.iter().collect::<String>());
     }
 
-    result
+    result as u64
 }
