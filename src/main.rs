@@ -12,6 +12,7 @@ mod day_08;
 mod day_09;
 mod day_10;
 mod day_11;
+mod day_12;
 
 fn main() {
     let arg: Option<String> = env::args().nth(1);
@@ -29,6 +30,7 @@ fn main() {
             "9" => day_09::run(),
             "10" => day_10::run(),
             "11" => day_11::run(),
+            "12" => day_12::run(),
             "all" => {
                 day_01::run();
                 day_02::run();
@@ -41,6 +43,7 @@ fn main() {
                 day_09::run();
                 day_10::run();
                 day_11::run();
+                day_12::run();
             }
             _ => panic!("day not implemented")
         }

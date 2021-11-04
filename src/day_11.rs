@@ -8,14 +8,15 @@ pub fn run(){
 
     for y in 0..GRID_SIZE {
         for x in 0..GRID_SIZE {
+            let power_lever = (((((((x + 1) + 10) * (y + 1)) as i32 + serial) * ((x + 1) + 10) as i32) / 100) % 10) - 5 as i32;
             if x == 0 && y == 0 {
-                integral[y][x] = power_lever(serial, x, y);
+                integral[y][x] = power_lever;
             } else if y == 0 {
-                integral[y][x] = integral[y][x-1] + power_lever(serial, x, y);
+                integral[y][x] = integral[y][x-1] + power_lever;
             } else if x == 0 {
-                integral[y][x] = integral[y-1][x] + power_lever(serial, x, y);
+                integral[y][x] = integral[y-1][x] + power_lever;
             } else {
-                integral[y][x] = power_lever(serial, x, y) + integral[y][x-1] + integral[y-1][x] - integral[y-1][x-1];
+                integral[y][x] = power_lever + integral[y][x-1] + integral[y-1][x] - integral[y-1][x-1];
             }
         }
     }
@@ -25,10 +26,6 @@ pub fn run(){
     println!("Part A result: {},{}", a, b);
     let (a, b, c) = part_b(&integral);
     println!("Part B result: {},{},{}", a,b,c);
-}
-
-fn power_lever(serial: i32, x: usize, y: usize) -> i32 {
-    (((((((x + 1) + 10) * (y + 1)) as i32 + serial) * ((x + 1) + 10) as i32) / 100) % 10) -5 as i32
 }
 
 fn find_highest(grid: &[[i32; GRID_SIZE]; GRID_SIZE], size: usize) -> ((usize, usize), i32) {
