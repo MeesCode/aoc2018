@@ -1,5 +1,6 @@
+use std::cmp::Ordering;
 
-#[derive(Clone)]
+#[derive(Clone, Eq, PartialEq, PartialOrd)]
 enum Direction {
     Up,
     Down, 
@@ -45,12 +46,22 @@ impl Direction {
     }
 }
 
+#[derive(Eq, PartialEq, PartialOrd)]
 struct Cart {
     x: usize,
     y: usize,
     direction: Direction,
     turns: i32,
     crashed: bool
+}
+
+impl Ord for Cart {
+    fn cmp(&self, other: &Self) -> Ordering {
+        if self.y == other.y {
+            return self.x.cmp(&other.x)
+        }
+        self.y.cmp(&other.y)
+    }
 }
 
 impl Cart {
@@ -159,6 +170,8 @@ fn part_a(mut carts: Vec<Cart>, grid: &Vec<Vec<char>>) -> ((usize, usize), (usiz
 
     loop {
 
+        carts.sort();
+
         if carts_left <= 1 {
             break;
         }
@@ -191,9 +204,10 @@ fn part_a(mut carts: Vec<Cart>, grid: &Vec<Vec<char>>) -> ((usize, usize), (usiz
 
         }
 
-        // println!();
-        // _display(&carts, &grid);
-
+        // if s == 238 || s == 239 {
+        //     println!();
+        //     _display(&carts, &grid);
+        // }
         
     }
 
