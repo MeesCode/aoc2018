@@ -14,44 +14,49 @@ mod day_10;
 mod day_11;
 mod day_12;
 mod day_13;
+mod day_14;
 
 fn main() {
     let arg: Option<String> = env::args().nth(1);
 
+    let tasks = [
+        day_01::run,
+        day_02::run,
+        day_03::run,
+        day_04::run,
+        day_05::run,
+        day_06::run,
+        day_07::run,
+        day_08::run,
+        day_09::run,
+        day_10::run,
+        day_11::run,
+        day_12::run,
+        day_13::run,
+        day_14::run
+    ];
+
     if let Some(day) = arg {
-        match &*day {
-            "1" => day_01::run(),
-            "2" => day_02::run(),
-            "3" => day_03::run(),
-            "4" => day_04::run(),
-            "5" => day_05::run(),
-            "6" => day_06::run(),
-            "7" => day_07::run(),
-            "8" => day_08::run(),
-            "9" => day_09::run(),
-            "10" => day_10::run(),
-            "11" => day_11::run(),
-            "12" => day_12::run(),
-            "13" => day_13::run(),
-            "all" => {
-                day_01::run();
-                day_02::run();
-                day_03::run();
-                day_04::run();
-                day_05::run();
-                day_06::run();
-                day_07::run();
-                day_08::run();
-                day_09::run();
-                day_10::run();
-                day_11::run();
-                day_12::run();
-                day_13::run();
+
+        if day == "all" {
+            for t in tasks.iter() {
+                t();
+                println!();
             }
-            _ => panic!("day not implemented")
+        } else {
+            if let Ok(index) = day.parse::<usize>() {
+                if index > 0 && index <= tasks.len() {
+                    tasks[index-1]();
+                } else {
+                    panic!("day not implemented");
+                }
+            } else {
+                panic!("not a valid argument");
+            }
         }
+
     } else {
-        panic!("Not enough arguments");
+        panic!("not enough arguments");
     }
 
 }
