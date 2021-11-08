@@ -15,6 +15,7 @@ mod day_11;
 mod day_12;
 mod day_13;
 mod day_14;
+mod day_15;
 
 fn main() {
     let arg: Option<String> = env::args().nth(1);
@@ -33,7 +34,8 @@ fn main() {
         day_11::run,
         day_12::run,
         day_13::run,
-        day_14::run
+        day_14::run,
+        day_15::run
     ];
 
     if let Some(day) = arg {
