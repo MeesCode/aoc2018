@@ -17,7 +17,6 @@ impl Ord for Unit {
     }
 }
 
-
 impl PartialOrd for Unit {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
@@ -32,8 +31,6 @@ impl PartialEq for Unit {
 
 impl Unit {
     fn approach(&self, cave: &Vec<Vec<char>>, units: &Vec<Unit>) -> Option<(usize, usize)> {
-
-        // find closest possible target location (breadth-first + read order)
 
         let mut us: Vec<(usize, usize)> = Vec::new();
         let mut others: Vec<(usize, usize)> = Vec::new();
@@ -51,10 +48,7 @@ impl Unit {
         current.push((self.x, self.y));
 
         while !current.is_empty() && targets.len() == 0 {
-            // println!("1");
-
             while !current.is_empty() {
-                // println!("2");
                 let cur: (usize, usize) = current.pop().unwrap();
                 visited.push((cur.0, cur.1));
 
@@ -75,11 +69,8 @@ impl Unit {
         }
 
         if targets.len() == 0 {
-            // println!("no moves possible");
             return None;
         }
-
-        // println!("targets: {:?}", targets);
 
         let mut picked_target = (999 as usize, 999 as usize);
         for i in targets {
@@ -88,20 +79,13 @@ impl Unit {
             }
         }
 
-        // println!("picked target: {:?}", picked_target);
-
-        // pick shortsest path (reverse breadth-first + read order)
-
         current = vec![picked_target];
         targets = Vec::new();
         visited = Vec::new();
         let cur_cord = (self.x, self.y);
 
         while !current.is_empty() && targets.len() == 0 {
-            // println!("3");
-
             while !current.is_empty() {
-                // println!("4");
                 let cur: (usize, usize) = current.pop().unwrap();
                 visited.push((cur.0, cur.1));
                 
@@ -123,20 +107,15 @@ impl Unit {
         }
 
         if targets.len() == 0 {
-            // println!("no moves possible");
             return None;
         }
 
-        // println!("moves: {:?}", targets);
         let mut picked_move = (999 as usize, 999 as usize);
         for i in targets {
             if i.1 < picked_move.1 || (i.1 == picked_move.1 && i.0 < picked_move.0){
                 picked_move = i;
             }
         }
-        // println!("picked move: {:?}", picked_move);
-
-        // println!("{:?} to {:?}", (self.x, self.y), picked_move);
 
         Some(picked_move)
     }
@@ -163,8 +142,6 @@ impl Unit {
         if lowest_hp == 999 {
             return None
         }
-
-        // println!("{},{} attacks {},{}", self.x, self.y, units[lowest].x, units[lowest].y);
 
         Some(lowest)
     }
@@ -198,14 +175,12 @@ pub fn run(){
             cave[y][x] = *c;
         }
     }
-
-    // _draw(&cave, &units);
     
     println!("Day 15");
     let a = part_a(&cave, &units);
     println!("Part A result: {}", a);
-    // let b = part_b(&input);
-    // println!("Part B result: {}", b);
+    let b = part_b(&cave, &units);
+    println!("Part B result: {}", b);
 }
 
 fn _draw(cave: &Vec<Vec<char>>, units: &Vec<Unit>) {
@@ -226,21 +201,14 @@ fn part_a(cave: &Vec<Vec<char>>, units: &Vec<Unit>) -> i32 {
     let mut units = units.clone();
 
     let mut counter = 0;
-    // _draw(&cave, &units);
     loop {
-        // println!("round {}", counter);
 
         for i in 0..units.len() {
 
-            // println!("play unit {:?}", (units[i].x, units[i].y));
-
             if units[i].hp <= 0 { continue; }
-
-            // _draw(&cave, &units);
 
             if let Some(index) = units[i].can_attack(&units) {
                 units[index].hp -= 3;
-                // println!("attack! new hp: {}", units[index].hp);
                 continue;
             }
 
@@ -250,14 +218,9 @@ fn part_a(cave: &Vec<Vec<char>>, units: &Vec<Unit>) -> i32 {
 
                 if let Some(index) = units[i].can_attack(&units) {
                     units[index].hp -= 3;
-                    // println!("attack! new hp: {}", units[index].hp);
                     continue;
                 }
             }
-
-            // for i in &units {
-                // println!("{}", i.hp);
-            // }
     
             let mut elf_hp = 0;
             let mut goblin_hp = 0;
@@ -270,25 +233,90 @@ fn part_a(cave: &Vec<Vec<char>>, units: &Vec<Unit>) -> i32 {
             }
     
             if goblin_hp <= 0 || elf_hp <= 0 {
-                // println!();
                 // _draw(&cave, &units);
-
-                // for i in &units {
-                //     // println!("{}", i.hp);
-                // }
-                _draw(&cave, &units);
                 return total_hp * counter;
             }
 
         }
 
         units.sort();
-
         counter += 1;
+    }
 
-        // println!();
-        // _draw(&cave, &units);
+}
 
+fn part_b(cave: &Vec<Vec<char>>, units_init: &Vec<Unit>) -> i32 {
+
+    let mut ap = 3;
+    
+    'outer: loop {
+
+        let mut units = units_init.clone();
+        ap += 1;
+        let mut counter = 0;
+        // println!("ap: {}", ap);
+
+        loop {
+
+            // _draw(&cave, &units);
+
+            for i in 0..units.len() {
+
+                if units[i].hp <= 0 { continue; }
+
+                if let Some(index) = units[i].can_attack(&units) {
+                    if units[index].team == 'G'{
+                        units[index].hp -= ap;
+                    } else {
+                        units[index].hp -= 3;
+                    }
+
+                    if units[index].team == 'E' && units[index].hp <= 0 {
+                        continue 'outer;
+                    }
+
+                    continue;
+                }
+
+                if let Some(cord) = units[i].approach(&cave, &units) {
+                    units[i].x = cord.0;
+                    units[i].y = cord.1;
+
+                    if let Some(index) = units[i].can_attack(&units) {
+                        if units[index].team == 'G'{
+                            units[index].hp -= ap;
+                        } else {
+                            units[index].hp -= 3;
+                        }
+    
+                        if units[index].team == 'E' && units[index].hp <= 0 {
+                            continue 'outer;
+                        }
+    
+                        continue;
+                    }
+                }
+        
+                let mut elf_hp = 0;
+                let mut goblin_hp = 0;
+        
+                for j in 0..units.len() {
+                    if units[j].team == 'E' && units[j].hp > 0 { elf_hp += units[j].hp; }
+                    if units[j].team == 'G' && units[j].hp > 0 { goblin_hp += units[j].hp; }
+                }
+        
+                if goblin_hp <= 0 {
+                    // _draw(&cave, &units);
+
+                    // println!("return {} * {} @ {}", elf_hp, counter, ap);
+                    return elf_hp * counter;
+                }
+
+            }
+
+            units.sort();
+            counter += 1;
+        }
     }
 
 }
