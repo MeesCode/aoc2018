@@ -1,4 +1,5 @@
 use std::cmp::Ordering;
+// use std::{thread, time};
 
 #[derive(Clone, Eq)]
 struct Unit {
@@ -258,7 +259,9 @@ fn part_b(cave: &Vec<Vec<char>>, units_init: &Vec<Unit>) -> i32 {
 
         loop {
 
+            // print!("\x1B[2J\x1B[1;1H");
             // _draw(&cave, &units);
+            // thread::sleep(time::Duration::from_millis(100));
 
             for i in 0..units.len() {
 
