@@ -32,8 +32,8 @@ pub fn run(){
     println!("Day 12");
     let a = part_a(&pots, &notes, 20);
     println!("Part A result: {}", a);
-    let b = part_a(&pots, &notes, 50000000000);
-    println!("Part B result: {}", b);
+    // let b = part_a(&pots, &notes, 50000000000);
+    // println!("Part B result: {}", b);
 }
 
 fn part_a(pots: &HashSet<i32>, notes: &Vec<Note>, generations: usize) -> u64 {

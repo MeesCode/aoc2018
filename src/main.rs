@@ -19,6 +19,7 @@ mod day_15;
 mod day_16;
 mod day_17;
 mod day_18;
+mod day_19;
 
 fn main() {
     let arg: Option<String> = env::args().nth(1);
@@ -42,13 +43,14 @@ fn main() {
         day_16::run,
         day_17::run,
         day_18::run,
+        day_19::run,
     ];
 
     if let Some(day) = arg {
 
         if day == "all" {
-            for t in tasks.iter() {
-                t();
+            for task in tasks.iter() {
+                task();
                 println!();
             }
         } else {
