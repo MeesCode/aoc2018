@@ -26,9 +26,6 @@ pub fn run(){
 
     let mut grid = vec![vec!['.'; max_x - min_x + 4]; max_y + 2];
 
-    // println!("min x {} max x {}, min y {} max y {}", min_x, max_x, min_y, max_y);
-    // println!("grid width {} grid height {}", grid[0].len(), grid.len());
-
     for cap in re.captures_iter(input) {
         let base = cap[2].parse::<usize>().unwrap();
         let from = cap[4].parse::<usize>().unwrap();
@@ -44,9 +41,8 @@ pub fn run(){
     }
 
     let mut water = -1;
-    // _draw(&grid);
 
-    for step in 0..1500 {
+    for step in 0..99999 {
 
         if step % 100 == 0 {
             // println!("{}", step);
@@ -79,8 +75,6 @@ pub fn run(){
                 (grid[y+1][x] == '~' || grid[y+1][x] == '#') {
 
                     let mut marked: Vec<(usize, usize)> = Vec::new();
-
-                    // println!("spread");
                     
                     // check if enclosed and mark area
                     let mut enclosed = '~';
@@ -88,7 +82,6 @@ pub fn run(){
                         marked.push((t, y));
                         if grid[y+1][t] != '~' && grid[y+1][t] != '#' { 
                             enclosed = '|'; 
-                            // println!("not enclosed right"); 
                             break; 
                         }
                         if grid[y][t+1] == '#' { break; }
@@ -97,14 +90,10 @@ pub fn run(){
                         marked.push((x-t, y));
                         if grid[y+1][x-t] != '~' && grid[y+1][x-t] != '#' { 
                             enclosed = '|'; 
-                            // println!("not enclosed left"); 
                             break; 
                         }
                         if grid[y][x-t-1] == '#' { break; }
                     }
-
-                    // println!("enclosed: {}", enclosed);
-                    // _draw(&grid);
 
                     // replace markers depending if enclosed
                     for i in &marked {
@@ -116,12 +105,7 @@ pub fn run(){
             }
         }
 
-        // println!();
-        // _draw(&grid);
     }
-
-    _draw(&grid);
-    println!("{}", water);
 
     let mut settled = 0;
 
@@ -132,14 +116,10 @@ pub fn run(){
             }
         }
     }
-
-    println!("{}", settled);
     
-    // println!("Day 1");
-    // let a = part_a(&input);
-    // println!("Part A result: {}", a);
-    // let b = part_b(&input);
-    // println!("Part B result: {}", b);
+    println!("Day 17");
+    println!("Part A result: {}", water);
+    println!("Part B result: {}", settled);
 }
 
 fn _draw(grid: &Vec<Vec<char>>) {
