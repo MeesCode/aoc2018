@@ -1,0 +1,32 @@
+#ip 1
+seti 123 0 5        # set 123 to reg 5
+bani 5 456 5        # set (123 & 456 = 72) to reg 5
+eqri 5 72 5         # set set reg 5 to 1 if reg 5 is 72 (it is)
+addr 5 1 1          # set ip =  reg 1 + reg 5 
+seti 0 0 1          # set ip to 0 (RESET!)
+seti 0 9 5          # set regs 5 to zero
+bori 5 65536 2      # set (reg5 | 65536 = reg2)
+seti 7571367 9 5    # set reg2 to 7571367
+bani 2 255 4        # reg4 = reg2 & 255
+addr 5 4 5          
+bani 5 16777215 5
+muli 5 65899 5
+bani 5 16777215 5
+gtir 256 2 4
+addr 4 1 1
+addi 1 1 1
+seti 27 1 1         # RESET
+seti 0 2 4
+addi 4 1 3
+muli 3 256 3
+gtrr 3 2 3
+addr 3 1 1
+addi 1 1 1
+seti 25 6 1         # RESET
+addi 4 1 4
+seti 17 8 1         # RESET
+setr 4 6 2
+seti 7 4 1          # RESET
+eqrr 5 0 4
+addr 4 1 1
+seti 5 5 1          # RESET
